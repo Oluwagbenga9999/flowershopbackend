@@ -13,6 +13,30 @@ mongoose.connect(process.env.MONGO_URI)
 
 const app = express();
 app.use(cors());
+
+const allowedOrigins = [
+  'http://localhost:3000',          // local development
+  'http://localhost:5173',          // Vite default
+  process.env.FRONTEND_URL,         // production (set this in Render)
+  // Add preview URLs if needed, or use a more dynamic check
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,                // important if you use cookies / auth headers
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
+// Explicitly handle preflight
+app.options('*', cors());
 app.use(express.json());
 app.use("/api/products", productRoutes);
 app.use("/api/auth", authRoutes);
@@ -22,5 +46,5 @@ app.get("/api/health", (req, res) => {
     res.json({status: "ok", message: "Server is alive 🌱"});
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));
