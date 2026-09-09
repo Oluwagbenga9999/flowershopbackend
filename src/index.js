@@ -13,6 +13,7 @@ mongoose.connect(process.env.MONGO_URI)
 
 const app = express();
 app.use(cors());
+const cors = require('cors');
 
 const allowedOrigins = [
   'http://localhost:3000',          // local development
@@ -36,7 +37,7 @@ app.use(cors({
 }));
 
 // Explicitly handle preflight
-app.options('/*', cors());
+app.options('*', cors());
 app.use(express.json());
 app.use("/api/products", productRoutes);
 app.use("/api/auth", authRoutes);
