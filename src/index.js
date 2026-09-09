@@ -14,10 +14,13 @@ mongoose.connect(process.env.MONGO_URI)
 const app = express();
 
 const allowedOrigins = [
-  'http://localhost:3000',          // local development
-  'http://localhost:5173',          // Vite default
-  'https://flowershopfrontend-61d7ljzog-gbengs1.vercel.app/,   // production (no /login)
+  'http://localhost:3000',
+  'http://localhost:5173',
 ];
+
+if (process.env.FRONTEND_URL) {
+  allowedOrigins.push(process.env.FRONTEND_URL);
+}
 
 app.use(cors({
   origin: function (origin, callback) {
