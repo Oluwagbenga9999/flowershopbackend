@@ -16,7 +16,7 @@ const app = express();
 const allowedOrigins = [
   'http://localhost:3000',          // local development
   'http://localhost:5173',          // Vite default
-  https://flowershopfrontend-h6mlfaj93-gbengs1.vercel.app/login,         // production (set this in Render)
+  "https://flowershopfrontend-h6mlfaj93-gbengs1.vercel.app/login",         // production (set this in Render)
   // Add preview URLs if needed, or use a more dynamic check
 ];
 
