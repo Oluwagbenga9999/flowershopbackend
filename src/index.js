@@ -36,7 +36,7 @@ app.use(cors({
 }));
 
 // Explicitly handle preflight
-app.options('*', cors());
+app.options('/*', cors());
 app.use(express.json());
 app.use("/api/products", productRoutes);
 app.use("/api/auth", authRoutes);
