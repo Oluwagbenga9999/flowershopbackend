@@ -39,11 +39,11 @@ app.use(cors({
 // Explicitly handle preflight
 
 app.use(express.json());
-app.use("/api/products", productRoutes);
-app.use("/api/auth", authRoutes);
-app.use("/api/orders", orderRoutes);
+app.use("api/products", productRoutes);
+app.use("api/auth", authRoutes);
+app.use("api/orders", orderRoutes);
 
-app.get("/api/health", (req, res) => {
+app.get("api/health", (req, res) => {
     res.json({status: "ok", message: "Server is alive 🌱"});
 });
 
