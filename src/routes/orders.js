@@ -1,5 +1,6 @@
 import express from "express";
 import Order from "../models/Order.js";
+import User from "../models/User.js";
 import { requireAuth, requireAdmin } from "../middleware/auth.js";
 
 const router = express.Router();
@@ -11,6 +12,39 @@ router.get("/", requireAuth, requireAdmin, async (req, res) => {
         res.json(orders);
     } catch (err) {
         res.status(500).json({ error: "Failed to fetch orders" });
+    }
+});
+
+// Get logged-in user's order history
+router.get("/mine", requireAuth, async (req, res) => {
+    try {
+        const orders = await Order.find({ user: req.userId }).sort({ createdAt: -1 });
+        res.json(orders);
+    } catch (error) {
+        console.error("ORDER HISTORY ERROR:", error);
+        res.status(500).json({ error: "Failed to fetch orders" });
+    }
+});
+
+// GET /api/orders/:id — user can fetch their own order, admin can fetch any
+router.get("/:id", requireAuth, async (req, res) => {
+    try {
+        const order = await Order.findById(req.params.id);
+
+        if (!order) {
+            return res.status(404).json({ error: "Order not found" });
+        }
+
+        const currentUser = await User.findById(req.userId).select("role");
+        const isAdmin = currentUser && currentUser.role === "admin";
+
+        if (order.user.toString() !== req.userId && !isAdmin) {
+            return res.status(403).json({ error: "Not authorized to view this order" });
+        }
+
+        res.json(order);
+    } catch (err) {
+        res.status(500).json({ error: "Failed to fetch order" });
     }
 });
 
@@ -35,17 +69,6 @@ router.post("/", requireAuth, async (req, res) => {
         res.status(201).json(order);
     } catch (err) {
         res.status(500).json({ error: "Failed to create order" });
-    }
-});
-
-// Get logged-in user's order history
-router.get("/mine", requireAuth, async (req, res) => {
-    try {
-        const orders = await Order.find({ user: req.userId }).sort({ createdAt: -1 });
-        res.json(orders);
-    } catch (error) {
-        console.error("ORDER HISTORY ERROR:", error);
-        res.status(500).json({ error: "Failed to fetch orders" });
     }
 });
 
